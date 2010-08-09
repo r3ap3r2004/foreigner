@@ -19,15 +19,25 @@ module Foreigner
     end
     
     def configured_adapter
-      ActiveRecord::Base.connection.adapter_name.downcase
+      if  !ActiveRecord::Base.connected?
+        if Rails.application
+          ActiveRecord::Base.configurations = Rails.application.config.database_configuration
+          ActiveRecord::Base.establish_connection
+          ActiveRecord::Base.connection_pool.spec.config[:adapter]
+        end
+      else
+        ActiveRecord::Base.connection_pool.spec.config[:adapter]
+      end
     end
     
     def on_load(&block)
       if defined?(Rails) && Rails.version >= '3.0'
         ActiveSupport.on_load :active_record do
           unless ActiveRecord::Base.connected?
+            if Rails.application
             ActiveRecord::Base.configurations = Rails.application.config.database_configuration
             ActiveRecord::Base.establish_connection
+          end
           end
           block.call
         end
