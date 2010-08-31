@@ -64,10 +64,5 @@ Foreigner.on_load do
     end
   end
   
-<<<<<<< HEAD
-  Foreigner.load_adapter!  
-end
-=======
   Foreigner.load_adapter!
 end
->>>>>>> 522d394e8dcae785a7c635f897a1ae39e4732a09
