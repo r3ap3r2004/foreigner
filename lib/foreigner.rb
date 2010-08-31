@@ -11,13 +11,13 @@ module Foreigner
     def register(adapter_name, file_name)
       adapters[adapter_name] = file_name
     end
-  
+
     def load_adapter!
       if adapters.key?(configured_adapter)
         require adapters[configured_adapter]
       end
     end
-    
+
     def configured_adapter
       if  !ActiveRecord::Base.connected?
         if Rails.application
@@ -29,7 +29,7 @@ module Foreigner
         ActiveRecord::Base.connection_pool.spec.config[:adapter]
       end
     end
-    
+
     def on_load(&block)
       if defined?(Rails) && Rails.version >= '3.0'
         ActiveSupport.on_load :active_record do
@@ -49,6 +49,7 @@ module Foreigner
 end
 
 Foreigner.register 'mysql', 'foreigner/connection_adapters/mysql_adapter'
+Foreigner.register 'mysql2', 'foreigner/connection_adapters/mysql_adapter'
 Foreigner.register 'postgresql', 'foreigner/connection_adapters/postgresql_adapter'
 
 Foreigner.on_load do
@@ -63,5 +64,10 @@ Foreigner.on_load do
     end
   end
   
+<<<<<<< HEAD
   Foreigner.load_adapter!  
 end
+=======
+  Foreigner.load_adapter!
+end
+>>>>>>> 522d394e8dcae785a7c635f897a1ae39e4732a09
