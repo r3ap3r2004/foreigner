@@ -1,7 +1,8 @@
-require File.dirname(__FILE__) + '/helper'
+require 'helper'
+require 'foreigner/connection_adapters/mysql_adapter'
 
 class MysqlAdapterTest < ActiveRecord::TestCase
-  include Foreigner::MysqlAdapter
+  include Foreigner::ConnectionAdapters::MysqlAdapter
 
   def test_add_without_options
     assert_equal(
@@ -44,6 +45,22 @@ class MysqlAdapterTest < ActiveRecord::TestCase
       "ALTER TABLE `employees` ADD CONSTRAINT `employees_company_id_fk` FOREIGN KEY (`company_id`) REFERENCES `companies`(id) " +
       "ON DELETE SET NULL",
       add_foreign_key(:employees, :companies, :dependent => :nullify)
+    )
+  end
+  
+  def test_add_with_restrict_dependency
+    assert_equal(
+      "ALTER TABLE `employees` ADD CONSTRAINT `employees_company_id_fk` FOREIGN KEY (`company_id`) REFERENCES `companies`(id) " +
+      "ON DELETE RESTRICT",
+      add_foreign_key(:employees, :companies, :dependent => :restrict)
+    )
+  end
+
+  def test_add_with_options
+    assert_equal(
+      "ALTER TABLE `employees` ADD CONSTRAINT `employees_company_id_fk` FOREIGN KEY (`company_id`) REFERENCES `companies`(id) " +
+      "on delete foo",
+      add_foreign_key(:employees, :companies, :options => 'on delete foo')
     )
   end
   

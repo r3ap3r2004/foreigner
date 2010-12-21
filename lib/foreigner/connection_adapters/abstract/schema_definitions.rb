@@ -5,46 +5,12 @@ module Foreigner
     
     module SchemaDefinitions
       def self.included(base)
-        base::TableDefinition.class_eval do
-          include Foreigner::ConnectionAdapters::TableDefinition
-        end
-        
         base::Table.class_eval do
           include Foreigner::ConnectionAdapters::Table
         end
       end
     end
   
-    module TableDefinition
-      def self.included(base)
-        base.class_eval do
-          include InstanceMethods
-          alias_method_chain :references, :foreign_keys
-        end
-      end
-    
-      module InstanceMethods
-        def references_with_foreign_keys(*args)
-          options = args.extract_options!
-          if options[:foreign_key].present?
-            ActiveSupport::Deprecation.warn(
-              ':foreign_key option is deprecated inside create_table. ' +
-              'to add a foreign key, use add_foreign_key', caller[0,10]
-            )
-          end
-
-          references_without_foreign_keys(*(args << options))
-        end
-    
-        def foreign_key(to_table, options = {})
-          ActiveSupport::Deprecation.warn(
-            'adding a foreign key inside create_table is deprecated. ' +
-            'to add a foreign key, use add_foreign_key', caller[0,10]
-          )
-        end
-      end
-    end
-
     module Table
       def self.included(base)
         base.class_eval do
@@ -83,7 +49,7 @@ module Foreigner
           @base.remove_foreign_key(@table_name, options)
         end
       
-        # Adds a :foreign_key option to TableDefinition.references.
+        # Adds a :foreign_key option to Table.references.
         # If :foreign_key is true, a foreign key constraint is added to the table.
         # You can also specify a hash, which is passed as foreign key options.
         # 
